@@ -1,0 +1,23 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="villageroads"
+version="${mod_version}"
+displayName="Village Roads"
+description='''Builds roads between villages (also Recruits settlements) and gives +10% speed on roads (Realistic Terrain road blocks).'''
+
+[[dependencies.villageroads]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.villageroads]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
