@@ -17,6 +17,9 @@ public class RoadConfig {
     public static final ForgeConfigSpec.BooleanValue BUILD_BRIDGES;
     public static final ForgeConfigSpec.IntValue SETTLEMENT_RADIUS;
     public static final ForgeConfigSpec.BooleanValue GENERATE_CHUNKS;
+    public static final ForgeConfigSpec.BooleanValue DISCOVER_AHEAD;
+    public static final ForgeConfigSpec.IntValue DISCOVER_RADIUS_CHUNKS;
+    public static final ForgeConfigSpec.IntValue DISCOVER_INTERVAL_SECONDS;
 
     public static final ForgeConfigSpec.BooleanValue SPEED_BONUS_ENABLED;
     public static final ForgeConfigSpec.DoubleValue SPEED_BONUS;
@@ -42,6 +45,11 @@ public class RoadConfig {
                 .defineInRange("settlementRadius", 40, 16, 500);
         GENERATE_CHUNKS = b.comment("Generate the chunks between two villages so the whole road appears at once (a few chunks per tick). If false, the road grows only where chunks are already loaded.")
                 .define("generateChunks", true);
+        DISCOVER_AHEAD = b.comment("Look for villages that are not generated yet (like /locate does) around each player, so roads are planned BEFORE the villages appear.")
+                .define("discoverAhead", true);
+        DISCOVER_RADIUS_CHUNKS = b.comment("Search radius for discoverAhead, in chunks.").defineInRange("discoverRadiusChunks", 48, 8, 128);
+        DISCOVER_INTERVAL_SECONDS = b.comment("How often one search per player is made (seconds). Higher = cheaper.")
+                .defineInRange("discoverIntervalSeconds", 20, 5, 600);
         b.pop();
         b.push("speed");
         SPEED_BONUS_ENABLED = b.comment("Players (and the mount they ride) walk faster on road blocks.")

@@ -4,6 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.StructureTags;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
@@ -148,6 +150,43 @@ public class RoadManager {
     private void enqueue(String dim, long chunk) {
         if (queued.computeIfAbsent(dim, k -> new HashSet<>()).add(chunk)) {
             pending.computeIfAbsent(dim, k -> new ArrayDeque<>()).add(chunk);
+        }
+    }
+
+
+    // ------------------------------------------------------------------ discovery of villages that do not exist yet
+
+    private int discoverCycle = 0;
+    private static final int[][] OFFSETS = {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+
+    @SubscribeEvent
+    public void onDiscoverTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || !RoadConfig.BUILD_ROADS.get() || !RoadConfig.DISCOVER_AHEAD.get()
+                || event.getServer().getTickCount() % (RoadConfig.DISCOVER_INTERVAL_SECONDS.get() * 20) != 0) {
+            return;
+        }
+        discoverCycle++;
+        int radius = RoadConfig.DISCOVER_RADIUS_CHUNKS.get();
+        int[] off = OFFSETS[discoverCycle % OFFSETS.length];
+        for (ServerPlayer p : event.getServer().getPlayerList().getPlayers()) {
+            if (!(p.level() instanceof ServerLevel level) || !RoadConfig.DIMENSIONS.get().contains(dimOf(level))) {
+                continue;
+            }
+            BlockPos from = new BlockPos(p.getBlockX() + off[0] * radius * 8, 64, p.getBlockZ() + off[1] * radius * 8);
+            BlockPos found;
+            try {
+                found = level.findNearestMapStructure(StructureTags.VILLAGE, from, radius, true);
+            } catch (Exception ex) {
+                continue;
+            }
+            if (found == null) {
+                continue;
+            }
+            RoadData data = RoadData.get(event.getServer());
+            String key = dimOf(level) + "|" + (found.getX() >> 4) + "," + (found.getZ() >> 4);
+            if (!data.hasVillage(key)) {
+                registerVillage(level, data, key, new BlockPos(found.getX(), 64, found.getZ()));
+            }
         }
     }
 
