@@ -31,7 +31,7 @@ public class RoadConfig {
         DIMENSIONS = b.comment("Dimensions where roads are built.")
                 .defineList("dimensions", List.of("minecraft:overworld"), o -> o instanceof String);
         MAX_LINK_DISTANCE = b.comment("Villages farther apart than this (blocks) are not connected.")
-                .defineInRange("maxLinkDistance", 700, 64, 3000);
+                .defineInRange("maxLinkBlocks", 1300, 64, 5000);
         LINKS_PER_VILLAGE = b.comment("Each new village is connected to this many nearest known villages.")
                 .defineInRange("linksPerVillage", 2, 1, 6);
         VILLAGE_EXCLUSION = b.comment("Roads stop this many blocks before a village centre (villages have their own paths).")
