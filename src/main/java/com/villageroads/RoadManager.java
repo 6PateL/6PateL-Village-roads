@@ -32,6 +32,7 @@ import java.util.Set;
  * and lays the road blocks chunk by chunk (only in chunks that are loaded, a few per tick).
  */
 public class RoadManager {
+    private static final org.slf4j.Logger LOG = com.mojang.logging.LogUtils.getLogger();
     private final Map<String, ArrayDeque<Long>> pending = new HashMap<>();
     private final Map<String, Set<Long>> queued = new HashMap<>();
 
@@ -97,6 +98,7 @@ public class RoadManager {
             }
         }
         data.villages.add(nv);
+        LOG.info("[VillageRoads] village found at {} ({} other villages in range)", center, others.size());
         others.sort(Comparator.comparingDouble(v -> horizontalDist2(v.center, center)));
         int n = Math.min(others.size(), RoadConfig.LINKS_PER_VILLAGE.get());
         for (int i = 0; i < n; i++) {
@@ -110,6 +112,7 @@ public class RoadManager {
             l.b = center;
             l.seed = center.asLong() * 31L + o.center.asLong();
             data.links.add(l);
+            LOG.info("[VillageRoads] road planned {} -> {}", o.center, center);
             for (long c : chunksAlong(l)) {
                 if (RoadConfig.GENERATE_CHUNKS.get() || level.getChunkSource().hasChunk(ChunkPos.getX(c), ChunkPos.getZ(c))) {
                     enqueue(dim, c);

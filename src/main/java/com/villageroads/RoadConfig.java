@@ -39,7 +39,7 @@ public class RoadConfig {
         BUILD_BRIDGES = b.comment("Lay simple plank bridges over rivers and lakes (never over oceans).")
                 .define("buildBridges", true);
         SETTLEMENT_RADIUS = b.comment("Village parts closer than this (blocks) count as ONE settlement and are not linked to each other.")
-                .defineInRange("settlementRadius", 110, 16, 500);
+                .defineInRange("settlementRadius", 40, 16, 500);
         GENERATE_CHUNKS = b.comment("Generate the chunks between two villages so the whole road appears at once (a few chunks per tick). If false, the road grows only where chunks are already loaded.")
                 .define("generateChunks", true);
         b.pop();
