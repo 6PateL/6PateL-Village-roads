@@ -1,19 +1,22 @@
-# Village Roads
+# Village Roads (Forge 1.20.1)
 
-Сабмод для Forge 1.20.1 (працює з Realistic Terrain, але не вимагає його).
+Дороги між селами, що генеруються **лише під час генерації світу**. У моді немає жодного tick-івенту
+(ServerTick / LevelTick / PlayerTick), тому на TPS він не впливає.
 
-## Що робить
-1. **Дороги між селами.** Коли завантажується чанк із селом (ванільні села і поселення Recruits Living Villages), мод запам'ятовує його центр і планує дорогу до 2 найближчих відомих сіл (до 1300 блоків). Частини одного поселення (в радіусі `settlementRadius`, 40 блоків) вважаються одним селом і між собою не з'єднуються. Чанки між селами генеруються автоматично (`generateChunks`), тож вся дорога з'являється одразу. Дорога лягає шматками, по кілька чанків за тік: земля й трава стають стежкою, пісок гравієм, через річки кладуться дерев'яні містки (через океани ні). Дорога трохи звивається і не заходить у село ближче ніж на 30 блоків.
-2. **+10% швидкості на дорогах.** Гравець (і тварина, на якій він їде) рухається на 10% швидше, стоячи на блоках дороги: стежка, гравій, дошки і все з тега `realistic_terrain:roads` (Realistic Terrain). Працює разом зі сповільненням Realistic Terrain, у яке дороги не входять.
+## Архітектура
+- `VillageRoads` — @Mod, DeferredRegister для блоку, предмета та `Feature` (`Registries.FEATURE`).
+- `RoadFeature` — `Feature<NoneFeatureConfiguration>`; для чанка, що генерується, малює лише його частину доріг.
+- `VillageLocator` — знаходить майбутні села з сіда: `RandomSpreadStructurePlacement` + перевірка біома через
+  `BiomeSource`. Нічого не завантажує й не генерує; результати кешуються по регіонах.
+- `VillagePathBlock` — блок стежки з `speedFactor(1.075)` (≈ +10% швидкості) без жодного коду на тік.
+- `RoadConfig` — налаштування (maxLinkBlocks, linksPerVillage, villageClearance, roadWidth, buildBridges, villageStructureSets).
 
-3. **Пошук наперед.** Мод сам шукає ще не згенеровані села навколо гравця (як команда /locate, `discoverAhead`) і планує дороги ще до того, як села з'являться. Так села «знають» одне про одне, навіть коли генеруються на льоту.
+## Datapack JSON
+- `worldgen/configured_feature/village_road.json`
+- `worldgen/placed_feature/village_road.json`
+- `forge/biome_modifier/add_village_road.json` (додає фічу в усі біоми Оверворлда, крок `top_layer_modification`)
 
-## Конфіг `villageroads-common.toml`
-buildRoads, dimensions, maxLinkBlocks, linksPerVillage, villageExclusion, roadWidth, chunksPerTick, buildBridges, speed.enabled, speed.bonus.
-
-## Обмеження
-- Села, які ви ще не відвідували (не згенеровані), дороги не отримують. Дорога з'являється, коли обидва кінці й проміжні чанки завантажуються.
-- Дорога йде по прямій із легким вигином і не обходить гори чи озера: на крутих схилах вона лише слідує рельєфу.
-
-## Збірка
-Завантажити в GitHub, Actions збере jar. Додаткових jar не потрібно.
+## Важливо
+- Дороги з'являються тільки в чанках, згенерованих **після** додавання мода (новий світ або нові чанки).
+- Положення сіл передбачається з сіда та біома, тому зрідка можлива дорога до села, яке не з'явилось.
+- Старі класи (RoadManager, RoadBuilder, RoadData, RoadSpeed) та залежність від Realistic Terrain прибрано.

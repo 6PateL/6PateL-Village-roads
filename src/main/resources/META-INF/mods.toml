@@ -6,7 +6,7 @@ license="MIT"
 modId="villageroads"
 version="${mod_version}"
 displayName="Village Roads"
-description='''Builds roads between villages (also Recruits settlements) and gives +10% speed on roads (Realistic Terrain road blocks).'''
+description='''Roads between villages, generated purely during world generation (no tick events). Village Path blocks give about +10% walking speed.'''
 
 [[dependencies.villageroads]]
     modId="forge"

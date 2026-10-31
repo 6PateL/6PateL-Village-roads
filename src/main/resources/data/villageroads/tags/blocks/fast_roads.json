@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "minecraft:dirt_path",
-    "minecraft:gravel",
-    "#minecraft:planks",
-    { "id": "#realistic_terrain:roads", "required": false }
-  ]
-}
