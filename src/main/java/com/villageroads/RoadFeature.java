@@ -46,8 +46,7 @@ public class RoadFeature extends Feature<NoneFeatureConfiguration> {
         int z0 = origin.getZ() & ~15;
         int max = RoadConfig.MAX_LINK_BLOCKS.get();
         int width = RoadConfig.ROAD_WIDTH.get();
-        int clearance = RoadConfig.VILLAGE_CLEARANCE.get();
-        int k = RoadConfig.LINKS_PER_VILLAGE.get();
+                int k = RoadConfig.LINKS_PER_VILLAGE.get();
 
         int cxm = x0 + 8;
         int czm = z0 + 8;
@@ -77,12 +76,12 @@ public class RoadFeature extends Feature<NoneFeatureConfiguration> {
         boolean[] done = new boolean[256];
         boolean any = false;
         for (Edge e : edges) {
-            any |= paint(level, e, x0, z0, width, clearance, done, server.getSeed());
+            any |= paint(level, e, x0, z0, width, done, server.getSeed());
         }
         return any;
     }
 
-    private boolean paint(WorldGenLevel level, Edge e, int x0, int z0, int width, int clearance,
+    private boolean paint(WorldGenLevel level, Edge e, int x0, int z0, int width,
                           boolean[] done, long worldSeed) {
         double ax = e.a().x(), az = e.a().z(), bx = e.b().x(), bz = e.b().z();
         double margin = 6 + width;
@@ -92,7 +91,8 @@ public class RoadFeature extends Feature<NoneFeatureConfiguration> {
         }
         double dx = bx - ax, dz = bz - az;
         double len = Math.sqrt(dx * dx + dz * dz);
-        if (len <= clearance * 2 + 8) {
+        int ca = e.a().clearance(), cb = e.b().clearance();
+        if (len <= ca + cb + 8) {
             return false;
         }
         double ux = dx / len, uz = dz / len;
@@ -103,7 +103,7 @@ public class RoadFeature extends Feature<NoneFeatureConfiguration> {
         double radius = width / 2.0 + 0.5;
         boolean placedAny = false;
 
-        for (double s = clearance; s <= len - clearance; s += 0.7) {
+        for (double s = ca; s <= len - cb; s += 0.7) {
             double taper = Math.min(1.0, Math.min(s / 60.0, (len - s) / 60.0));
             double off = 4.0 * Math.sin(s / 26.0 + phase) * taper;
             double px = ax + ux * s + nx * off;

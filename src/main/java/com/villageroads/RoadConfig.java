@@ -14,6 +14,8 @@ public class RoadConfig {
     public static final ForgeConfigSpec.IntValue VILLAGE_CLEARANCE;
     public static final ForgeConfigSpec.IntValue ROAD_WIDTH;
     public static final ForgeConfigSpec.BooleanValue BUILD_BRIDGES;
+    public static final ForgeConfigSpec.BooleanValue RECRUITS_VILLAGES;
+    public static final ForgeConfigSpec.IntValue RECRUITS_CLEARANCE;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -29,6 +31,10 @@ public class RoadConfig {
                 .defineInRange("villageClearance", 36, 0, 100);
         ROAD_WIDTH = b.comment("Width of the road in blocks (1-5).").defineInRange("roadWidth", 3, 1, 5);
         BUILD_BRIDGES = b.comment("Lay plank bridges over rivers (never over oceans).").define("buildBridges", true);
+        RECRUITS_VILLAGES = b.comment("Also connect the villages of the Recruits Villages mod (their sites are predicted from the world seed).")
+                .define("recruitsVillages", true);
+        RECRUITS_CLEARANCE = b.comment("Road stops this many blocks before a Recruits Villages centre.")
+                .defineInRange("recruitsClearance", 56, 0, 120);
         b.pop();
         SPEC = b.build();
     }

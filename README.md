@@ -9,7 +9,7 @@
 - `VillageLocator` — знаходить майбутні села з сіда: `RandomSpreadStructurePlacement` + перевірка біома через
   `BiomeSource`. Нічого не завантажує й не генерує; результати кешуються по регіонах.
 - `VillagePathBlock` — блок стежки з `speedFactor(1.075)` (≈ +10% швидкості) без жодного коду на тік.
-- `RoadConfig` — налаштування (maxLinkBlocks, linksPerVillage, villageClearance, roadWidth, buildBridges, villageStructureSets).
+- `RoadConfig` — налаштування (recruitsVillages, recruitsClearance, maxLinkBlocks, linksPerVillage, villageClearance, roadWidth, buildBridges, villageStructureSets).
 
 ## Datapack JSON
 - `worldgen/configured_feature/village_road.json`
@@ -20,3 +20,5 @@
 - Дороги з'являються тільки в чанках, згенерованих **після** додавання мода (новий світ або нові чанки).
 - Положення сіл передбачається з сіда та біома, тому зрідка можлива дорога до села, яке не з'явилось.
 - Старі класи (RoadManager, RoadBuilder, RoadData, RoadSpeed) та залежність від Realistic Terrain прибрано.
+- Села Recruits Villages (мод ставить їх сам, у рантаймі, а не як vanilla-структури) передбачаються тим самим
+  детермінованим розрахунком (сітка, salt, біом, перевірка рівності місцевості) — читається з конфігу того мода через reflection.
