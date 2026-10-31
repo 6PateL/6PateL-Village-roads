@@ -46,7 +46,8 @@ final class VillageLocator {
         final Climate.Sampler sampler;
         final long seed;
         final ServerLevel level;
-        final Recruits recruits;
+        Recruits recruits;
+        boolean recruitsTried;
         final Map<Key, Village> regionCache = new ConcurrentHashMap<>();
         final Map<Key, Boolean> missCache = new ConcurrentHashMap<>();
 
@@ -66,7 +67,6 @@ final class VillageLocator {
             this.sampler = level.getChunkSource().randomState().sampler();
             this.seed = state.getLevelSeed();
             this.level = level;
-            this.recruits = RoadConfig.RECRUITS_VILLAGES.get() ? Recruits.load() : null;
         }
     }
 
@@ -87,6 +87,7 @@ final class VillageLocator {
                         (Integer) val(c, "VILLAGE_SALT"), tags, (Integer) val(c, "GEN_MAX_HEIGHT_VARIANCE"),
                         Math.min((Integer) val(c, "GEN_PLOT_CHECK_RADIUS"), 20));
             } catch (Throwable t) {
+                VillageRoads.LOGGER.warn("Recruits Villages settings not readable (yet): {}", t.toString());
                 return null;
             }
         }
@@ -179,6 +180,13 @@ final class VillageLocator {
     /** Villages (their start chunk centres) within {@code radius} blocks of the given block position. */
     static List<Village> near(ServerLevel level, int blockX, int blockZ, int radius) {
         Ctx c = ctx(level);
+        if (c.recruits == null && !c.recruitsTried && RoadConfig.RECRUITS_VILLAGES.get()) {
+            c.recruits = Recruits.load();
+            c.recruitsTried = c.recruits != null;
+            if (c.recruits != null) {
+                VillageRoads.LOGGER.info("Recruits Villages grid: {} (world seed {})", c.recruits, c.seed);
+            }
+        }
         List<Village> out = new ArrayList<>();
         for (int ri = 0; ri < c.rules.size(); ri++) {
             Rule rule = c.rules.get(ri);

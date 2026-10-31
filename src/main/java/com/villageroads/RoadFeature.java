@@ -30,6 +30,9 @@ import java.util.Set;
 public class RoadFeature extends Feature<NoneFeatureConfiguration> {
     private record Edge(VillageLocator.Village a, VillageLocator.Village b) {}
 
+    private static final java.util.concurrent.atomic.AtomicInteger LOGGED = new java.util.concurrent.atomic.AtomicInteger();
+    private static final java.util.concurrent.atomic.AtomicInteger CALLS = new java.util.concurrent.atomic.AtomicInteger();
+
     public RoadFeature(Codec<NoneFeatureConfiguration> codec) {
         super(codec);
     }
@@ -38,6 +41,9 @@ public class RoadFeature extends Feature<NoneFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
         if (!RoadConfig.ENABLED.get()) {
             return false;
+        }
+        if (CALLS.getAndIncrement() == 0) {
+            VillageRoads.LOGGER.info("Road feature is being placed by world generation (first call)");
         }
         WorldGenLevel level = ctx.level();
         ServerLevel server = level.getLevel();
@@ -73,6 +79,10 @@ public class RoadFeature extends Feature<NoneFeatureConfiguration> {
             }
         }
 
+        if (LOGGED.getAndIncrement() < 8) {
+            VillageRoads.LOGGER.info("Road feature at chunk {},{}: {} villages nearby, {} road links", x0 >> 4, z0 >> 4,
+                    all.size(), edges.size());
+        }
         boolean[] done = new boolean[256];
         boolean any = false;
         for (Edge e : edges) {
